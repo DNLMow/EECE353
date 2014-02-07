@@ -46,6 +46,8 @@ BEGIN
 			to7seg <= "0001100";
 		ELSIF card="1101" THEN	-- if card is 13 display H
 			to7seg <= "1001000";
+		ELSE							-- if card is another number display an ERROR on the 7 segment
+			to7seg <= "0110110";
 		END IF;
 	END PROCESS;
 	

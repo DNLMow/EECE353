@@ -15,5 +15,16 @@ ARCHITECTURE behavioral OF scorehand IS
 BEGIN
 
 -- Your code goes here.
+	PROCESS( card1, card2, card3 ) 
+	BEGIN
+		IF .. THEN
+			..
+		ELSIF .. THEN
+			..
+		ELSIF .. THEN
+			..
+		
+		END IF;
+	END PROCESS;
 
 END;
