@@ -32,6 +32,8 @@ END datapath;
 
 ARCHITECTURE mixed OF datapath IS
 
+BEGIN
+
     -- Your code goes here
 	
 END;

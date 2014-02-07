@@ -25,6 +25,7 @@ END statemachine;
 
 ARCHITECTURE behavioural OF statemachine IS
 
+BEGIN
 -- Your code goes here.  This is the most challenge of all the files
 -- to write.
 -- test bojan
