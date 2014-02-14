@@ -1,3 +1,5 @@
 EECE353
 =======
 Please keep the repository clean. Do not add any other files other than the ones that were already added.
+
+reg4.vhd is needed for the project to compile. Please include it in the project.
