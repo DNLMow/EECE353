@@ -43,7 +43,7 @@ BEGIN
 		ELSIF card="1010" THEN	-- if card is 10 display 0
 			to7seg <= "1000000";
 		ELSIF card="1011" THEN	-- if card is 11 display J
-			to7seg <= "0000011";
+			to7seg <= "1100000";
 		ELSIF card="1100" THEN	-- if card is 12 display q (q should look different than 9)
 			to7seg <= "0011000";
 		ELSIF card="1101" THEN	-- if card is 13 display H
