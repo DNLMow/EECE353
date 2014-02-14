@@ -12,14 +12,15 @@ END scorehand;
 
 ARCHITECTURE behavioral OF scorehand IS
 
-	VARIABLE card1_value : STD_LOGIC_VECTOR(3 DOWNTO 0);
-	VARIABLE card2_value : STD_LOGIC_VECTOR(3 DOWNTO 0);
-	VARIABLE card3_value : STD_LOGIC_VECTOR(3 DOWNTO 0);
-
 BEGIN
 
 -- Your code goes here.
 	PROCESS( card1, card2, card3 ) 
+	
+	VARIABLE card1_value : STD_LOGIC_VECTOR(3 DOWNTO 0);
+	VARIABLE card2_value : STD_LOGIC_VECTOR(3 DOWNTO 0);
+	VARIABLE card3_value : STD_LOGIC_VECTOR(3 DOWNTO 0);
+	
 	BEGIN
 	
 -- card1 control statements 
@@ -121,8 +122,7 @@ BEGIN
 			card3_value := "0000";
 		END IF;	
 		
+	total <= STD_LOGIC_VECTOR((UNSIGNED(card1_value) + UNSIGNED(card2_value) + UNSIGNED(card3_value)) MOD 10);
 	END PROCESS;
 
-	total <= STD_LOGIC_VECTOR((UNSIGNED(card1_value) + UNSIGNED(card2_value) + UNSIGNED(card3_value)) MOD 10);
-	
 END;
