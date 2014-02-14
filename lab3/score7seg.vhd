@@ -17,7 +17,7 @@ BEGIN
 	PROCESS(score)
 	BEGIN
 	IF score="0001" THEN		-- if score is 1 display A
-			seg7 <= "0001000";
+			seg7 <= "1001111";
 		ELSIF score="0010" THEN	-- if score is 2 display 2
 			seg7 <= "0010010";
 		ELSIF score="0011" THEN	-- if score is 3 display 3
@@ -33,15 +33,7 @@ BEGIN
 		ELSIF score="1000" THEN	-- if score is 8 display 8
 			seg7 <= "0000000";
 		ELSIF score="1001" THEN	-- if score is 9 display 9 (9 should look different then q)
-			seg7 <= "0000100";				
-		ELSIF score="1010" THEN	-- if score is 10 display 0
-			seg7 <= "0000001";
-		ELSIF score="1011" THEN	-- if score is 11 display J
-			seg7 <= "0000011";
-		ELSIF score="1100" THEN	-- if score is 12 display q (q should look different than 9)
-			seg7 <= "0001100";
-		ELSIF score="1101" THEN	-- if score is 13 display H
-			seg7 <= "1001000";
+			seg7 <= "0000100";
 		ELSE							-- if score is another number display an ERROR on the 7 segment
 			seg7 <= "0110110";
 		END IF;
