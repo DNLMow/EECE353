@@ -20,7 +20,9 @@ BEGIN
    -- wrong track.
 	PROCESS( card )
 	BEGIN
-		IF card="0001" THEN		-- if card is 1 display A
+		IF		card="0000" THEN  -- if card is 0 display blank
+			to7seg <= "1111111";
+		ELSIF card="0001" THEN	-- if card is 1 display A
 			to7seg <= "0001000";
 		ELSIF card="0010" THEN	-- if card is 2 display 2
 			to7seg <= "0010010";
