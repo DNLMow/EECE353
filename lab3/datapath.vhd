@@ -81,7 +81,7 @@ BEGIN
 	P2: reg4
 	port map(load_card=>load_pcard2,resetb=>resetb,slow_clock=>slow_clock,incard=>new_card_sig,outcard=>pcard2_out_sig);
 	P3: reg4
-	port map(load_card=>load_pcard3,resetb=>resetb,slow_clock=>slow_clock,incard=>new_card_sig,outcard=>pcard3_out);
+	port map(load_card=>load_pcard3,resetb=>resetb,slow_clock=>slow_clock,incard=>new_card_sig,outcard=>pcard3_out_sig);
 	D1: reg4
 	port map(load_card=>load_dcard1,resetb=>resetb,slow_clock=>slow_clock,incard=>new_card_sig,outcard=>dcard1_out_sig);
 	D2: reg4
@@ -101,11 +101,19 @@ BEGIN
 	S6: card7seg
 	port map(card=>dcard3_out_sig,seg7=>HEX6);
 	H1: scorehand
-	port map(card1=>pcard1_out_sig,card2=>pcard2_out_sig,card3=>pcard3_out_sig,total=>pscore_out);
+	port map(card1=>pcard1_out_sig,card2=>pcard2_out_sig,card3=>pcard3_out_sig,total=>pscore_out_sig);
 	H2: scorehand
-	port map(card1=>dcard1_out_sig,card2=>dcard2_out_sig,card3=>dcard3_out_sig,total=>dscore_out);
+	port map(card1=>dcard1_out_sig,card2=>dcard2_out_sig,card3=>dcard3_out_sig,total=>dscore_out_sig);
 	C1: scoreseg7
 	port map(score=>pscore_out_sig,seg7=>HEX3);
 	C2: scoreseg7
 	port map(score=>dscore_out_sig,seg7=>HEX7);
+	
+	process(slow_clock)
+	begin
+	dscore_out<=dscore_out_sig;
+	pscore_out<=pscore_out_sig;
+	pcard3_out<=pcard3_out_sig;
+	end process;
+	
 END mixed;
