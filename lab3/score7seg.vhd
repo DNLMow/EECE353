@@ -35,7 +35,7 @@ BEGIN
 		ELSIF score="1000" THEN	-- if score is 8 display 8
 			seg7 <= "0000000";
 		ELSIF score="1001" THEN	-- if score is 9 display 9 (9 should look different then q)
-			seg7 <= "0001000";
+			seg7 <= "0010000";
 		ELSE							-- if score is another number display an ERROR on the 7 segment
 			seg7 <= "1111111";
 		END IF;
