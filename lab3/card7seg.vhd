@@ -27,27 +27,27 @@ BEGIN
 		ELSIF card="0010" THEN	-- if card is 2 display 2
 			to7seg <= "0010010";
 		ELSIF card="0011" THEN	-- if card is 3 display 3
-			to7seg <= "0000110";
+			to7seg <= "0110000";
 		ELSIF card="0100" THEN	-- if card is 4 display 4
-			to7seg <= "1001100";
+			to7seg <= "0011001";
 		ELSIF card="0101" THEN	-- if card is 5 display 5
-			to7seg <= "0100100";
+			to7seg <= "0010010";
 		ELSIF card="0110" THEN	-- if card is 6 display 6
-			to7seg <= "0100000";
+			to7seg <= "0000010";
 		ELSIF card="0111" THEN	-- if card is 7 display 7
-			to7seg <= "0001111";
+			to7seg <= "1111000";
 		ELSIF card="1000" THEN	-- if card is 8 display 8
 			to7seg <= "0000000";
 		ELSIF card="1001" THEN	-- if card is 9 display 9 (9 should look different then q)
-			to7seg <= "0000100";				
+			to7seg <= "0010000";				
 		ELSIF card="1010" THEN	-- if card is 10 display 0
-			to7seg <= "0000001";
+			to7seg <= "1000000";
 		ELSIF card="1011" THEN	-- if card is 11 display J
 			to7seg <= "0000011";
 		ELSIF card="1100" THEN	-- if card is 12 display q (q should look different than 9)
-			to7seg <= "0001100";
+			to7seg <= "0011000";
 		ELSIF card="1101" THEN	-- if card is 13 display H
-			to7seg <= "1001000";
+			to7seg <= "0001001";
 		ELSE							-- if card is another number display an ERROR on the 7 segment
 			to7seg <= "0110110";
 		END IF;

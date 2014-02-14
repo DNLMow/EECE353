@@ -16,7 +16,7 @@ BEGIN
    -- wrong track.
 	PROCESS(score)
 	BEGIN
-	IF score="0001" THEN		-- if score is 1 display A
+	IF score="0001" THEN		-- if score is 1 display 1
 			seg7 <= "1001111";
 		ELSIF score="0010" THEN	-- if score is 2 display 2
 			seg7 <= "0010010";

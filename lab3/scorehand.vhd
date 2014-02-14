@@ -123,6 +123,7 @@ BEGIN
 		END IF;	
 		
 	total <= STD_LOGIC_VECTOR((UNSIGNED(card1_value) + UNSIGNED(card2_value) + UNSIGNED(card3_value)) MOD 10);
+	
 	END PROCESS;
 
 END;
