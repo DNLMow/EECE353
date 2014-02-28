@@ -29,7 +29,7 @@ signal state : state_types;
 BEGIN
 
 PROCESS(slow_clock,resetb)
-	VARIABLE currentstate: state_types;
+	VARIABLE current_state: state_types;
 BEGIN
 
 -- Your code goes here.  This is the most challenge of all the files
@@ -37,86 +37,79 @@ BEGIN
 -- test bojan
 -- test shibo
 	
-
-	
 	IF (resetb='0') THEN
-		currentstate := PT1;
+		current_state := PT1;
 	ELSIF(rising_edge(slow_clock)) THEN
-		currentstate :=state;
+		current_state :=state;
 		
-		CASE currentstate IS
-			WHEN PT1 => currentstate:=BT1; 	
-			WHEN BT1 => currentstate:=PT2;	
-			WHEN PT2 => currentstate:=BT2;
+		CASE current_state IS
+			WHEN PT1 => current_state:=BT1; 	
+			WHEN BT1 => current_state:=PT2;	
+			WHEN PT2 => current_state:=BT2;
 			WHEN BT2 => IF(pscore ="1000")THEN
-							currentstate:=CI;
+							current_state:=CI;
 							ELSIF (pscore ="1001") THEN
-								currentstate:=CI;
+								current_state:=CI;
 							ELSIF (dscore ="1000") THEN
-								currentstate:=CI;
+								current_state:=CI;
 							ELSIF (dscore ="1001") THEN
-								currentstate:=CI;
+								current_state:=CI;
 							ELSIF ((pscore="0111")or (pscore="0110") ) THEN
 									CASE dscore IS
-										WHEN "0000" =>currentstate:=BT3;
-										WHEN "0001" =>currentstate:=BT3;
-										WHEN "0010" =>currentstate:=BT3;
-										WHEN "0011" =>currentstate:=BT3;
-										WHEN "0100" =>currentstate:=BT3;
-										WHEN "0101" =>currentstate:=BT3;
-										WHEN OTHERS =>currentstate:=CI;
+										WHEN "0000" =>current_state:=BT3;
+										WHEN "0001" =>current_state:=BT3;
+										WHEN "0010" =>current_state:=BT3;
+										WHEN "0011" =>current_state:=BT3;
+										WHEN "0100" =>current_state:=BT3;
+										WHEN "0101" =>current_state:=BT3;
+										WHEN OTHERS =>current_state:=CI;
 									END CASE;
 							ELSE
-									currentstate:=PT3;
+									current_state:=PT3;
 							END IF;
 			WHEN PT3 => IF(dscore="0111")THEN --dealer score 7 not get card
-										currentstate :=CI;
+										current_state :=CI;
 							ELSIF((dscore="0000") or (dscore="0001") or (dscore="0010")) THEN --dealer score 0,1,2 take a card
-										currentstate :=BT3;
+										current_state :=BT3;
 							ELSIF(dscore="0110") THEN
 											CASE pcard3 IS
-												WHEN "0110" => currentstate:=BT3;
-												WHEN "0111" => currentstate:=BT3;
-												WHEN OTHERS => currentstate:=CI;
+												WHEN "0110" => current_state:=BT3;
+												WHEN "0111" => current_state:=BT3;
+												WHEN OTHERS => current_state:=CI;
 											END CASE;
 							ELSIF(dscore="0101")THEN
 											CASE pcard3 IS
-												WHEN "0100" => currentstate:=BT3;
-												WHEN "0101" => currentstate:=BT3;
-												WHEN "0110" => currentstate:=BT3;
-												WHEN "0111" => currentstate:=BT3;
-												WHEN OTHERS => currentstate:=CI;
+												WHEN "0100" => current_state:=BT3;
+												WHEN "0101" => current_state:=BT3;
+												WHEN "0110" => current_state:=BT3;
+												WHEN "0111" => current_state:=BT3;
+												WHEN OTHERS => current_state:=CI;
 											END CASE;
 							ELSIF(dscore="0100")THEN
 											CASE pcard3 IS
-												WHEN "0010" => currentstate:=BT3;
-												WHEN "0011" => currentstate:=BT3;
-												WHEN "0100" => currentstate:=BT3;
-												WHEN "0101" => currentstate:=BT3;
-												WHEN "0110" => currentstate:=BT3;
-												WHEN "0111" => currentstate:=BT3;
-												WHEN OTHERS => currentstate:=CI;
+												WHEN "0010" => current_state:=BT3;
+												WHEN "0011" => current_state:=BT3;
+												WHEN "0100" => current_state:=BT3;
+												WHEN "0101" => current_state:=BT3;
+												WHEN "0110" => current_state:=BT3;
+												WHEN "0111" => current_state:=BT3;
+												WHEN OTHERS => current_state:=CI;
 											END CASE;
 							ELSIF(dscore="0011")THEN
 											CASE pcard3 IS
-												WHEN "1000" => currentstate:=CI;
-												WHEN OTHERS => currentstate:=BT3;
+												WHEN "1000" => current_state:=CI;
+												WHEN OTHERS => current_state:=BT3;
 											END CASE;
 							ELSE
-								currentstate:=CI;
+								current_state:=CI;
 							END IF;
-							
---**********************************************************************
---			WHEN BT2 => currentstate:=PT3;	
---			WHEN PT3 => currentstate:=BT3;	
---**********************************************************************
-			WHEN BT3 => currentstate:=CI;		
-			WHEN CI => currentstate:=GO;
-			WHEN GO => currentstate := GO;
-			WHEN others => currentstate:= PT1;
+			WHEN BT3 => current_state:=CI;		
+			WHEN CI => current_state:=GO;
+			WHEN GO => current_state := GO;
+			WHEN others => current_state:= PT1;
 		END CASE;
 	END IF;
-state <= currentstate;
+state <= current_state;
 END PROCESS;
 
 PROCESS(state)
