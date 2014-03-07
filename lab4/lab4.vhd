@@ -11,7 +11,8 @@ entity lab4 is
        VGA_VS              : out std_logic;
        VGA_BLANK           : out std_logic;
        VGA_SYNC            : out std_logic;
-       VGA_CLK             : out std_logic)
+       VGA_CLK             : out std_logic
+		 );
 end lab4;
 
 architecture rtl of lab4 is
@@ -58,8 +59,27 @@ begin
 
 
   -- rest of your code goes here, as well as possibly additional files
-
-
+  
+	signal initx : std_logic;
+	signal inity : std_logic;
+	
+	signal xdone : std_logic;
+	signal ydone : std_logic;
+  
+	process ( KEY(3), CLOCK_50 )
+	
+	variable x_out : unsigned( 7 downto 0 ) := "00000000";
+	variable y_out : unsigned( 6 downto 0 ) := "0000000";
+	
+	begin 
+	
+		if ( KEY(3) = '1' ) then
+			x_out := "00000000";
+			y_out := "0000000";
+		end if;
+						
+	end process;
+	
 end RTL;
 
 
