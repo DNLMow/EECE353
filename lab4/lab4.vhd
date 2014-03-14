@@ -3,7 +3,8 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity lab4 is
-  port(CLOCK_50            : in  std_logic;
+  port(
+		 CLOCK_50            : in  std_logic;
        KEY                 : in  std_logic_vector(3 downto 0);
        SW                  : in  std_logic_vector(17 downto 0);
        VGA_R, VGA_G, VGA_B : out std_logic_vector(9 downto 0);  -- The outs go to VGA controller
@@ -30,11 +31,27 @@ architecture rtl of lab4 is
           VGA_R, VGA_G, VGA_B                          : out std_logic_vector(9 downto 0);
           VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC, VGA_CLK : out std_logic);
   end component;
+  
+  component datapath
+  			  port(
+			 initx                                      : in  std_logic;
+          clock                                        : in  std_logic;
+          inity                                       : in  std_logic;
+          x                                            : out  std_logic_vector(7 downto 0);
+          y                                            : out std_logic_vector(6 downto 0);
+          xdone													 : out  std_logic;
+			    ydone													 : out  std_logic);
+  end component;
 
   signal x      : std_logic_vector(7 downto 0);
   signal y      : std_logic_vector(6 downto 0);
   signal colour : std_logic_vector(2 downto 0);
   signal plot   : std_logic;
+  	signal initx : std_logic;
+	signal inity : std_logic;
+	
+	signal xdone : std_logic;
+	signal ydone : std_logic;
 
 begin
 
@@ -59,26 +76,16 @@ begin
 
 
   -- rest of your code goes here, as well as possibly additional files
-  
-	signal initx : std_logic;
-	signal inity : std_logic;
-	
-	signal xdone : std_logic;
-	signal ydone : std_logic;
-  
-	process ( KEY(3), CLOCK_50 )
-	
-	variable x_out : unsigned( 7 downto 0 ) := "00000000";
-	variable y_out : unsigned( 6 downto 0 ) := "0000000";
-	
-	begin 
-	
-		if ( KEY(3) = '1' ) then
-			x_out := "00000000";
-			y_out := "0000000";
-		end if;
-						
-	end process;
+   datapath_u0 : datapath
+    port map( 
+			 initx                                     => initx ,
+          clock                                     =>  cloCK_50,
+          inity                                    => inity,
+          x                                         =>  x,
+          y                                          => y,
+          xdone													=> xdone,
+			    ydone											=>	ydone);
+
 	
 end RTL;
 
