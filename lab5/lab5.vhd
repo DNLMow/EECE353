@@ -234,7 +234,11 @@ begin
 				
 				if (SW(17) = '1' and REDRAW_P1G = '1') then
 					P1_GOAL := P1_GOAL - 1;
+					colour <= "000";
+				elsif (SW(17) = '0' and REDRAW_P1G = '1') then
+					P1_GOAL := P1_GOAL + 1;
 				end if;
+				
 							
 				x <= std_logic_vector(P1G_X(7 downto 0));
 				y <= std_logic_vector(P1_GOAL(6 downto 0));
