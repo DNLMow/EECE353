@@ -42,6 +42,8 @@ architecture RTL of lab5 is
 	signal INITY  		: std_logic := '1';
 	signal INITX  		: std_logic := '1';
 	signal COUNTER		: unsigned(25 downto 0) := "00000000000000000000000000";
+	signal COUNTERSUP : unsigned(25 downto 0) := "00000000000000000000000000";
+
 	signal CLOCK_SLOW : std_logic;
 	
 	signal DRAW_TOP_WALL : std_logic := '1';
@@ -50,9 +52,13 @@ architecture RTL of lab5 is
 	signal DRAW_P1G	: std_logic := '1';
 	signal REDRAW_P1G : std_logic := '0';
 	signal DRAW_P1F	: std_logic := '1';
+	signal REDRAW_P1F : std_logic := '0';
 	
 	signal DRAW_P2G	: std_logic := '1';
+	signal REDRAW_P2G : std_logic := '0';
 	signal DRAW_P2F	: std_logic := '1';
+	signal REDRAW_P2F : std_logic := '0';
+
 begin 
 	
 	-- includes the vga adapter, which should be in your project 
@@ -80,8 +86,13 @@ begin
 	begin
 	
 		if (rising_edge(CLOCK_50)) then
-			if (COUNTER = "00000010001001000010000000") then
-				COUNTER <= "00000000000000000000000000";
+			if (COUNTER > "00000001001001000010000000") then
+						if (COUNTERSUP > "00000000000001000000000000") then
+						COUNTER <= "00000000001001000010000000";
+						COUNTERSUP <=    "00000000000001000000000000" - 100;
+						end if;
+				COUNTERSUP <= COUNTERSUP + 100;
+				COUNTER <= "00000000000000000000000000" + COUNTERSUP;
 				CLOCK_SLOW <= '1';
 			else 
 				COUNTER <= COUNTER + 1;
@@ -106,57 +117,33 @@ begin
 		variable BOT_WALL   : unsigned(7 downto 0);
 	
 		variable P1_GOAL	  : unsigned(6 downto 0);
+		variable P1_GOALER  : unsigned(6 downto 0);
+		variable P1_GOALER2 : unsigned(6 downto 0);
 		variable P1G_X		  : unsigned(7 downto 0);
 		
 		variable P1_FORW	  : unsigned(6 downto 0);
+		variable P1_FORWER  : unsigned(6 downto 0);
+		variable P1_FORWER2 : unsigned(6 downto 0);
 		variable P1F_X		  : unsigned(7 downto 0);
 		
 		variable P2_GOAL	  : unsigned(6 downto 0);
+		variable P2_GOALER  : unsigned(6 downto 0);
+		variable P2_GOALER2 : unsigned(6 downto 0);
 		variable P2G_X		  : unsigned(7 downto 0);
 		
 		variable P2_FORW 	  : unsigned(6 downto 0);
+		variable P2_FORWER  : unsigned(6 downto 0);
+		variable P2_FORWER2 : unsigned(6 downto 0);
 		variable P2F_X		  : unsigned(7 downto 0);
+		
+		variable BALL_X	  : unsigned(7 downto 0);
+		variable BALL_Y	  : unsigned(6 downto 0);
 		
 	begin 
 	
 		if (rising_edge(CLOCK_SLOW)) then
 		
 -- Clear the screen -----------------------------------------------------------------
-		if (key(3) = '0') then
-
-			if (INITY = '1') then 
-				Y_VAR := "0000000";
-			else
-				Y_VAR := Y_VAR + 1;
-			end if;
-			
-			if (INITX = '1') then 
-				X_VAR := "00000000";
-			end if;
-			
-			if (Y_VAR = "1110111") then 
-				INITY <= '1';
-			else 
-				INITY <= '0';
-			end if;
-			
-			if (X_VAR = "10011111" and Y_VAR = "1110111") then
-				INITX <= '1';
-			else
-				INITX <= '0';
-			end if;
-			
-			colour <= "000";
-			x <= std_logic_vector(X_VAR(7 downto 0));
-			y <= std_logic_vector(Y_VAR(6 downto 0));
-			plot <= '1';
-			
-			if (Y_VAR = "1110111") then
-				X_VAR := X_VAR + 1;
-			end if;
-			
-			CURRENT_STATE := "0000";
-		end if;
 -- Clear the screen -----------------------------------------------------------------	
 
 		case CURRENT_STATE is 
@@ -231,6 +218,10 @@ begin
 				else 
 					DRAW_P1G <= '0';
 				end if;
+							
+				x <= std_logic_vector(P1G_X(7 downto 0));
+				y <= std_logic_vector(P1_GOAL(6 downto 0));
+				plot <= '1';
 				
 				if (SW(17) = '1' and REDRAW_P1G = '1') then
 					P1_GOAL := P1_GOAL - 1;
@@ -238,11 +229,6 @@ begin
 				elsif (SW(17) = '0' and REDRAW_P1G = '1') then
 					P1_GOAL := P1_GOAL + 1;
 				end if;
-				
-							
-				x <= std_logic_vector(P1G_X(7 downto 0));
-				y <= std_logic_vector(P1_GOAL(6 downto 0));
-				plot <= '1';
 -- Player 1: Goalie -----------------------------------------------------------------
 
 			when "0011" => CURRENT_STATE := "0100";
@@ -250,24 +236,32 @@ begin
 				-- draw player 1 forward with x offset of 50
 				P1F_X := "00110010";
 			
-				-- draw player 1 forward in the verticle
+				-- draw player 1 goalie in the verticle
 				colour <= "100";
-				if (DRAW_P1F = '1') then
+				if (DRAW_P1F = '1' and REDRAW_P1F = '0') then
 					P1_FORW := "0000100";
-				else 
+				elsif (DRAW_P1F = '0' and REDRAW_P1F = '0') then
 					P1_FORW := P1_FORW + 1;
 				end if;
 				
-				-- draw player 1 forward for 10 pixels in the y
-				if (P1_FORW = "0001110") then
+				-- draw player 1 goalie for 10 pixels in the y
+				if (P1_FORW = "0001110" and REDRAW_P1F = '0') then					
 					DRAW_P1F <= '1';
+					REDRAW_P1F <= '1';
 				else 
 					DRAW_P1F <= '0';
 				end if;
-
+							
 				x <= std_logic_vector(P1F_X(7 downto 0));
 				y <= std_logic_vector(P1_FORW(6 downto 0));
 				plot <= '1';
+				
+				if (SW(16) = '1' and REDRAW_P1F = '1') then
+					P1_FORW := P1_FORW - 1;
+					colour <= "000";
+				elsif (SW(16) = '0' and REDRAW_P1F = '1') then
+					P1_FORW := P1_FORW + 1;
+				end if;
 -- Player 1: Forward ----------------------------------------------------------------	
 			
 			when "0100" => CURRENT_STATE := "0101"; 
@@ -276,23 +270,31 @@ begin
 				P2G_X := "10011010";
 			
 				-- draw player 2 goalie in the verticle
-				colour <= "011";
-				if (DRAW_P2G = '1') then
+				colour <= "001";
+				if (DRAW_P2G = '1' and REDRAW_P2G = '0') then
 					P2_GOAL := "0000100";
-				else 
+				elsif (DRAW_P2G = '0' and REDRAW_P2G = '0') then
 					P2_GOAL := P2_GOAL + 1;
 				end if;
 				
 				-- draw player 1 goalie for 10 pixels in the y
-				if (P2_GOAL = "0001110") then
+				if (P2_GOAL = "0001110" and REDRAW_P2G = '0') then					
 					DRAW_P2G <= '1';
+					REDRAW_P2G <= '1';
 				else 
 					DRAW_P2G <= '0';
 				end if;
-
+							
 				x <= std_logic_vector(P2G_X(7 downto 0));
 				y <= std_logic_vector(P2_GOAL(6 downto 0));
 				plot <= '1';
+				
+				if (SW(0) = '1' and REDRAW_P2G = '1') then
+					P2_GOAL := P2_GOAL - 1;
+					colour <= "000";
+				elsif (SW(0) = '0' and REDRAW_P2G = '1') then
+					P2_GOAL := P2_GOAL + 1;
+				end if;
 -- Player 2: Goalie -----------------------------------------------------------------
 			
 			when "0101" => CURRENT_STATE := "0110"; 
@@ -301,25 +303,188 @@ begin
 				P2F_X := "01101101";
 			
 				-- draw player 2 forward in the verticle
-				colour <= "011";
-				if (DRAW_P2F = '1') then
+				colour <= "001";
+				if (DRAW_P2F = '1' and REDRAW_P2F = '0') then
 					P2_FORW := "0000100";
-				else 
+				elsif (DRAW_P2F = '0' and REDRAW_P2F = '0') then
 					P2_FORW := P2_FORW + 1;
 				end if;
 				
-				-- draw player 2 forward for 10 pixels in the y
-				if (P2_FORW = "0001110") then
+				-- draw player 1 goalie for 10 pixels in the y
+				if (P2_FORW = "0001110" and REDRAW_P2F = '0') then					
 					DRAW_P2F <= '1';
+					REDRAW_P2F <= '1';
 				else 
 					DRAW_P2F <= '0';
 				end if;
-
+							
 				x <= std_logic_vector(P2F_X(7 downto 0));
 				y <= std_logic_vector(P2_FORW(6 downto 0));
 				plot <= '1';
--- Player 2: Forward ----------------------------------------------------------------
+				
+				if (SW(1) = '1' and REDRAW_P2F = '1') then
+					P2_FORW := P2_FORW - 1;
+					colour <= "000";
+				elsif (SW(1) = '0' and REDRAW_P2F = '1') then
+					P2_FORW := P2_FORW + 1;
+				end if;
+			
+			when "0110" => CURRENT_STATE := "0111";  
+-- Player 1: Goalie Erase -----------------------------------------------------------------
+			-- draw player 1 goalie with x offset of 5
+			
+				-- draw player 1 goalie in the verticle
+				colour <= "100";
+				if (DRAW_P1G = '1' and REDRAW_P1G = '0') then
+					P1_GOAL := "0000100";
+				elsif (DRAW_P1G = '0' and REDRAW_P1G = '0') then
+					P1_GOAL := P1_GOAL + 1;
+				end if;
+				
+				-- draw player 1 goalie for 10 pixels in the y
+				if (P1_GOAL = "0001110" and REDRAW_P1G = '0') then					
+					DRAW_P1G <= '1';
+					REDRAW_P1G <= '1';
+					P1_GOALER := "0000100";
+				else 
+					DRAW_P1G <= '0';
+				end if;
+							
+				x <= std_logic_vector(P1G_X(7 downto 0));
+				y <= std_logic_vector(P1_GOALER(6 downto 0));
+				plot <= '1';
+				
+				if (SW(17) = '1' and REDRAW_P1G = '1') then
+					P1_GOALER:= P1_GOALER - 1;
+				elsif (SW(17) = '0' and REDRAW_P1G = '1') then
+					P1_GOALER := P1_GOALER + 1;
+					colour <= "000";
+				end if;
+				
+			when "0111" => CURRENT_STATE := "1000";  
+-- Player 2: Goalie Erase -----------------------------------------------------------------
+			-- draw player 1 goalie with x offset of 5
+			
+				-- draw player 1 goalie in the verticle
+				colour <= "001";
+				if (DRAW_P2G = '1' and REDRAW_P2G = '0') then
+					P2_GOAL := "0000100";
+				elsif (DRAW_P2G = '0' and REDRAW_P2G = '0') then
+					P2_GOAL := P2_GOAL + 1;
+				end if;
+				
+				-- draw player 1 goalie for 10 pixels in the y
+				if (P2_GOAL = "0001110" and REDRAW_P2G = '0') then					
+					DRAW_P2G <= '1';
+					REDRAW_P2G <= '1';
+					P2_GOALER := "0000100";
+				else 
+					DRAW_P2G <= '0';
+				end if;
+							
+				x <= std_logic_vector(P2G_X(7 downto 0));
+				y <= std_logic_vector(P2_GOALER(6 downto 0));
+				plot <= '1';
+				
+				if (SW(0) = '1' and REDRAW_P2G = '1') then
+					P2_GOALER:= P2_GOALER - 1;
+				elsif (SW(0) = '0' and REDRAW_P2G = '1') then
+					P2_GOALER := P2_GOALER + 1;
+					colour <= "000";
+				end if;
+-- Player 1: Goalie Erase -----------------------------------------------------------------
 
+			when "1000" => CURRENT_STATE := "1001";  
+-- Player 2: Goalie Erase -----------------------------------------------------------------
+			-- draw player 1 goalie with x offset of 5
+			
+				-- draw player 1 goalie in the verticle
+				colour <= "100";
+				if (DRAW_P1F = '1' and REDRAW_P1F = '0') then
+					P1_FORW := "0000100";
+				elsif (DRAW_P1F = '0' and REDRAW_P1F = '0') then
+					P1_FORW := P1_FORW + 1;
+				end if;
+				
+				-- draw player 1 goalie for 10 pixels in the y
+				if (P1_FORW = "0001110" and REDRAW_P1F = '0') then					
+					DRAW_P1F <= '1';
+					REDRAW_P1F <= '1';
+					P1_FORWER := "0000100";
+				else 
+					DRAW_P1F <= '0';
+				end if;
+							
+				x <= std_logic_vector(P1F_X(7 downto 0));
+				y <= std_logic_vector(P1_FORWER(6 downto 0));
+				plot <= '1';
+				
+				if (SW(16) = '1' and REDRAW_P1F = '1') then
+					P1_FORWER:= P1_FORWER - 1;
+				elsif (SW(16) = '0' and REDRAW_P1F = '1') then
+					P1_FORWER := P1_FORWER + 1;
+					colour <= "000";
+				end if;
+-- Player 1: Goalie Erase -----------------------------------------------------------------
+			
+	when "1001" => CURRENT_STATE := "1010";  
+-- Player 2: Goalie Erase -----------------------------------------------------------------
+			-- draw player 1 goalie with x offset of 5
+			
+				-- draw player 1 goalie in the verticle
+				colour <= "001";
+				if (DRAW_P2F = '1' and REDRAW_P2F = '0') then
+					P2_FORW := "0000100";
+				elsif (DRAW_P2F = '0' and REDRAW_P2F = '0') then
+					P2_FORW := P2_FORW + 1;
+				end if;
+				
+				-- draw player 1 goalie for 10 pixels in the y
+				if (P2_FORW = "0001110" and REDRAW_P2F = '0') then					
+					DRAW_P2F <= '1';
+					REDRAW_P2F <= '1';
+					P2_FORWER := "0000100";
+				else 
+					DRAW_P2F <= '0';
+				end if;
+							
+				x <= std_logic_vector(P2F_X(7 downto 0));
+				y <= std_logic_vector(P2_FORWER(6 downto 0));
+				plot <= '1';
+				
+				if (SW(1) = '1' and REDRAW_P2F = '1') then
+					P2_FORWER:= P2_FORWER - 1;
+				elsif (SW(1) = '0' and REDRAW_P2F = '1') then
+					P2_FORWER := P2_FORWER + 1;
+					colour <= "000";
+				end if;
+
+when "1010" => CURRENT_STATE := "1011"; 
+				colour <= "011";
+				
+				BALL_X := "01001111";
+				BALL_Y := "0111011";
+				
+				x <= std_logic_vector(BALL_X(7 downto 0));
+				y <= std_logic_vector(BALL_Y(6 downto 0));
+				plot <= '1';
+-- Player 1: Goalie Erase2 -----------------------------------------------------------------
+--			-- draw player 1 goalie with x offset of 5
+--				P1G_X := "00000101";
+--				
+--				if (SW(17) = '1' and REDRAW_P1G = '1') then
+--					P1_GOALER2:= P1_GOAL + 1;
+--					colour <= "000";
+--				elsif (SW(17) = '0' and REDRAW_P1G = '1') then
+--					P1_GOALER2:= P1_GOALER - 1;
+--					colour <= "000";
+--				end if;
+--							
+--				x <= std_logic_vector(P1G_X(7 downto 0));
+--				y <= std_logic_vector(P1_GOALER2(6 downto 0));
+--				plot <= '1';
+-- Player 1: Goalie Erase2 -----------------------------------------------------------------
+			
 			when others => CURRENT_STATE := "0000";
 			
 		end case;
