@@ -86,25 +86,29 @@ begin
 	-- process for the paddles:
 	process(CLOCK_SLOW) 
 	
-		variable P1_GOAL	: unsigned(5 downto 0);
+		variable P1_GOAL	: unsigned(6 downto 0);
 		
 	begin 
 	
 -- Player 1: Goalie -----------------------------------------------------------------
-		if (rising_edge(CLOCK_SLOW) then
+		if (rising_edge(CLOCK_SLOW)) then
 			if (DRAW_P1G = '1') then
-				P1_GOAL := "000100";
+				P1_GOAL := "0001000";
 			else 
 				P1_GOAL := P1_GOAL + 1;
 			end if;
 			
-			if (P1_GOAL = "001111") then
-				DRAW_P1G = '1';
+			if (P1_GOAL = "0011110") then
+				DRAW_P1G <= '1';
 			else 
-				DRAW_P1G = '0';
+				DRAW_P1G <= '0';
 			end if;
 			
 		end if;
+		
+		colour <= "111";
+		y <= std_logic_vector(P1_GOAL(6 downto 0));
+		plot <= '1';
 -- Player 1: Goalie -----------------------------------------------------------------	
 		
 	end process;
