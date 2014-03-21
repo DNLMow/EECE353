@@ -220,7 +220,7 @@ begin
 				colour <= "100";
 				if (DRAW_P1G = '1' and REDRAW_P1G = '0') then
 					P1_GOAL := "0000100";
-				else 
+				elsif (DRAW_P1G = '0' and REDRAW_P1G = '0') then
 					P1_GOAL := P1_GOAL + 1;
 				end if;
 				
