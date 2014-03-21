@@ -48,6 +48,7 @@ architecture RTL of lab5 is
 	signal DRAW_BOT_WALL : std_logic := '1';
 	
 	signal DRAW_P1G	: std_logic := '1';
+	signal REDRAW_P1G : std_logic := '0';
 	signal DRAW_P1F	: std_logic := '1';
 	
 	signal DRAW_P2G	: std_logic := '1';
@@ -79,7 +80,7 @@ begin
 	begin
 	
 		if (rising_edge(CLOCK_50)) then
-			if (COUNTER = "00000000001001000010000000") then
+			if (COUNTER = "00000010001001000010000000") then
 				COUNTER <= "00000000000000000000000000";
 				CLOCK_SLOW <= '1';
 			else 
@@ -213,33 +214,36 @@ begin
 			when "0010" => CURRENT_STATE := "0011";
 -- Player 1: Goalie -----------------------------------------------------------------
 				-- draw player 1 goalie with x offset of 5
-				colour <= "111";
 				P1G_X := "00000101";
 			
 				-- draw player 1 goalie in the verticle
 				colour <= "100";
-				if (DRAW_P1G = '1') then
+				if (DRAW_P1G = '1' and REDRAW_P1G = '0') then
 					P1_GOAL := "0000100";
 				else 
 					P1_GOAL := P1_GOAL + 1;
 				end if;
 				
 				-- draw player 1 goalie for 10 pixels in the y
-				if (P1_GOAL = "0001110") then
+				if (P1_GOAL = "0001110" and REDRAW_P1G = '0') then					
 					DRAW_P1G <= '1';
+					REDRAW_P1G <= '1';
 				else 
 					DRAW_P1G <= '0';
 				end if;
-
+				
+				if (SW(17) = '1' and REDRAW_P1G = '1') then
+					P1_GOAL := P1_GOAL - 1;
+				end if;
+							
 				x <= std_logic_vector(P1G_X(7 downto 0));
 				y <= std_logic_vector(P1_GOAL(6 downto 0));
 				plot <= '1';
--- Player 1: Goalie -----------------------------------------------------------------	
+-- Player 1: Goalie -----------------------------------------------------------------
 
 			when "0011" => CURRENT_STATE := "0100";
 -- Player 1: Forward ----------------------------------------------------------------
 				-- draw player 1 forward with x offset of 50
-				colour <= "111";
 				P1F_X := "00110010";
 			
 				-- draw player 1 forward in the verticle
@@ -265,7 +269,6 @@ begin
 			when "0100" => CURRENT_STATE := "0101"; 
 -- Player 2: Goalie -----------------------------------------------------------------
 				-- draw player 2 goalie with x offset of -5
-				colour <= "111";
 				P2G_X := "10011010";
 			
 				-- draw player 2 goalie in the verticle
@@ -291,7 +294,6 @@ begin
 			when "0101" => CURRENT_STATE := "0110"; 
 -- Player 2: Forward ----------------------------------------------------------------
 				-- draw player 2 forward with x offset of -50
-				colour <= "111";
 				P2F_X := "01101101";
 			
 				-- draw player 2 forward in the verticle
