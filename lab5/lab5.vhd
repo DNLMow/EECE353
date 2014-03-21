@@ -90,11 +90,13 @@ begin
 		
 	end process;
 	
-	-- process for the paddles:
+	-- process for the paddles and wall:
 	process(CLOCK_SLOW) 
 	
 		variable CURRENT_STATE : unsigned(3 DOWNTO 0) := "0000";
 		
+		variable Y_VAR		  : unsigned(6 downto 0);
+		variable X_VAR		  : unsigned(7 downto 0);
 		
 		variable WALL_TOP_Y : unsigned(6 downto 0);
 		variable TOP_WALL   : unsigned(7 downto 0);
@@ -118,10 +120,44 @@ begin
 	
 		if (rising_edge(CLOCK_SLOW)) then
 		
+-- Clear the screen -----------------------------------------------------------------
 		if (key(3) = '0') then
+
+			if (INITY = '1') then 
+				Y_VAR := "0000000";
+			else
+				Y_VAR := Y_VAR + 1;
+			end if;
+			
+			if (INITX = '1') then 
+				X_VAR := "00000000";
+			end if;
+			
+			if (Y_VAR = "1110111") then 
+				INITY <= '1';
+			else 
+				INITY <= '0';
+			end if;
+			
+			if (X_VAR = "10011111" and Y_VAR = "1110111") then
+				INITX <= '1';
+			else
+				INITX <= '0';
+			end if;
+			
+			colour <= "000";
+			x <= std_logic_vector(X_VAR(7 downto 0));
+			y <= std_logic_vector(Y_VAR(6 downto 0));
+			plot <= '1';
+			
+			if (Y_VAR = "1110111") then
+				X_VAR := X_VAR + 1;
+			end if;
+			
 			CURRENT_STATE := "0000";
 		end if;
-		
+-- Clear the screen -----------------------------------------------------------------	
+
 		case CURRENT_STATE is 
 
 			when "0000" => CURRENT_STATE := "0001";
