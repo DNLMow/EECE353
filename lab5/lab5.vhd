@@ -321,50 +321,7 @@ begin
 		end if;
 		
 	end process;
-		
---	process(CLOCK_SLOW)
---	
---		variable Y_VAR		: unsigned(7 downto 0);
---		variable X_VAR		: unsigned(8 downto 0);
---		
---	begin
---					
---		-- This if block is to fill entire screen
---		if (rising_edge(CLOCK_SLOW)) then 
---			
---			if (INITY = '1') then 
---				Y_VAR := "00000000";
---			else
---				Y_VAR := Y_VAR + 1;
---			end if;
---			
---			if (INITX = '1') then 
---				X_VAR := "000000000";
---			elsif (Y_VAR = "1110111") then
---				X_VAR := X_VAR + 1;
---			end if;
---			
---			if (Y_VAR = "1110111") then 
---				INITY <= '1';
---			else 
---				INITY <= '0';
---			end if;
---			
---			if (X_VAR = "10011111") then
---				INITX <= '1';
---			else
---				INITX <= '0';
---			end if;
---			
---			colour <= "111";
---			x <= std_logic_vector(X_VAR(7 downto 0));
---			y <= std_logic_vector(Y_VAR(6 downto 0));
---			plot <= '1';
---			
---		end if;
---		
---		end process;
-		
+				
 end RTL;
 
 
