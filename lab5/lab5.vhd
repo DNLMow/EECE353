@@ -45,6 +45,7 @@ architecture RTL of lab5 is
 	signal CLOCK_SLOW : std_logic;
 	
 	signal DRAW_P1G	: std_logic := '1';
+	signal DRAW_P1F	: std_logic := '1';
 begin 
 	
 	-- includes the vga adapter, which should be in your project 
@@ -86,41 +87,81 @@ begin
 	-- process for the paddles:
 	process(CLOCK_SLOW) 
 	
+		variable CURRENT_STATE : unsigned(3 DOWNTO 0) := "0000";
+	
 		variable P1_GOAL	: unsigned(6 downto 0);
 		variable P1G_X		: unsigned(7 downto 0);
 		
+		variable P1_FORW	: unsigned(6 downto 0);
+		variable P1F_X		: unsigned(7 downto 0);
+		
 	begin 
 	
--- Player 1: Goalie -----------------------------------------------------------------
 		if (rising_edge(CLOCK_SLOW)) then
 		
-			-- draw player 1 goalie with x offset of 5
-			colour <= "111";
-			P1G_X := "00000101";
-		
-			-- draw player 1 goalie in the verticle
-			colour <= "100";
-			if (DRAW_P1G = '1') then
-				P1_GOAL := "0000100";
-			else 
-				P1_GOAL := P1_GOAL + 1;
-			end if;
-			
-			-- draw player 1 goalie for 10 pixels in the y
-			if (P1_GOAL = "0001110") then
-				DRAW_P1G <= '1';
-			else 
-				DRAW_P1G <= '0';
-			end if;
-			
-			
+		if (key(3) = '0') then
+			CURRENT_STATE := "0000";
 		end if;
 		
-		colour <= "100";
-		x <= std_logic_vector(P1G_X(7 downto 0));
-		y <= std_logic_vector(P1_GOAL(6 downto 0));
-		plot <= '1';
+		case CURRENT_STATE is 
+-- Player 1: Goalie -----------------------------------------------------------------
+			when "0000" => CURRENT_STATE := "0001";
+				-- draw player 1 goalie with x offset of 5
+				colour <= "111";
+				P1G_X := "00000101";
+			
+				-- draw player 1 goalie in the verticle
+				colour <= "100";
+				if (DRAW_P1G = '1') then
+					P1_GOAL := "0000100";
+				else 
+					P1_GOAL := P1_GOAL + 1;
+				end if;
+				
+				-- draw player 1 goalie for 10 pixels in the y
+				if (P1_GOAL = "0001110") then
+					DRAW_P1G <= '1';
+				else 
+					DRAW_P1G <= '0';
+				end if;
+				
+				colour <= "100";
+				x <= std_logic_vector(P1G_X(7 downto 0));
+				y <= std_logic_vector(P1_GOAL(6 downto 0));
+				plot <= '1';
 -- Player 1: Goalie -----------------------------------------------------------------	
+
+-- Player 1: Forward ----------------------------------------------------------------
+			when "0001" => CURRENT_STATE := "0010";
+				-- draw player 1 forward with x offset of 15
+				colour <= "111";
+				P1F_X := "00001111";
+			
+				-- draw player 1 forward in the verticle
+				colour <= "100";
+				if (DRAW_P1F = '1') then
+					P1_FORW := "0000100";
+				else 
+					P1_FORW := P1_FORW + 1;
+				end if;
+				
+				-- draw player 1 forward for 10 pixels in the y
+				if (P1_FORW = "0001110") then
+					DRAW_P1F <= '1';
+				else 
+					DRAW_P1F <= '0';
+				end if;
+				
+				colour <= "100";
+				x <= std_logic_vector(P1F_X(7 downto 0));
+				y <= std_logic_vector(P1_FORW(6 downto 0));
+				plot <= '1';
+-- Player 1: Forward ----------------------------------------------------------------				
+			when others => CURRENT_STATE := "0001"; 
+			
+			end case;
+			
+		end if;
 		
 	end process;
 		
