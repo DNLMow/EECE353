@@ -44,8 +44,14 @@ architecture RTL of lab5 is
 	signal COUNTER		: unsigned(25 downto 0) := "00000000000000000000000000";
 	signal CLOCK_SLOW : std_logic;
 	
+	signal DRAW_TOP_WALL : std_logic := '1';
+	signal DRAW_BOT_WALL : std_logic := '1';
+	
 	signal DRAW_P1G	: std_logic := '1';
 	signal DRAW_P1F	: std_logic := '1';
+	
+	signal DRAW_P2G	: std_logic := '1';
+	signal DRAW_P2F	: std_logic := '1';
 begin 
 	
 	-- includes the vga adapter, which should be in your project 
@@ -88,12 +94,25 @@ begin
 	process(CLOCK_SLOW) 
 	
 		variable CURRENT_STATE : unsigned(3 DOWNTO 0) := "0000";
-	
-		variable P1_GOAL	: unsigned(6 downto 0);
-		variable P1G_X		: unsigned(7 downto 0);
 		
-		variable P1_FORW	: unsigned(6 downto 0);
-		variable P1F_X		: unsigned(7 downto 0);
+		
+		variable WALL_TOP_Y : unsigned(6 downto 0);
+		variable TOP_WALL   : unsigned(7 downto 0);
+		
+		variable WALL_BOT_Y : unsigned(6 downto 0);
+		variable BOT_WALL   : unsigned(7 downto 0);
+	
+		variable P1_GOAL	  : unsigned(6 downto 0);
+		variable P1G_X		  : unsigned(7 downto 0);
+		
+		variable P1_FORW	  : unsigned(6 downto 0);
+		variable P1F_X		  : unsigned(7 downto 0);
+		
+		variable P2_GOAL	  : unsigned(6 downto 0);
+		variable P2G_X		  : unsigned(7 downto 0);
+		
+		variable P2_FORW 	  : unsigned(6 downto 0);
+		variable P2F_X		  : unsigned(7 downto 0);
 		
 	begin 
 	
@@ -104,8 +123,59 @@ begin
 		end if;
 		
 		case CURRENT_STATE is 
--- Player 1: Goalie -----------------------------------------------------------------
+
 			when "0000" => CURRENT_STATE := "0001";
+-- Top wall bounds ------------------------------------------------------------------
+				-- draw top wall
+				WALL_TOP_Y := "0000000";
+			
+				-- draw top wall in the horizontal
+				colour <= "111";
+				if (DRAW_TOP_WALL = '1') then
+					TOP_WALL := "00000000";
+				else 
+					TOP_WALL := TOP_WALL + 1;
+				end if;
+				
+				-- draw top wall for whole screen in the x
+				if (TOP_WALL = "10011111") then
+					DRAW_TOP_WALL <= '1';
+				else 
+					DRAW_TOP_WALL <= '0';
+				end if;
+
+				x <= std_logic_vector(TOP_WALL(7 downto 0));
+				y <= std_logic_vector(WALL_TOP_Y(6 downto 0));
+				plot <= '1';
+-- Top wall bounds ------------------------------------------------------------------
+
+			when "0001" => CURRENT_STATE := "0010";
+-- Bottom wall bounds ---------------------------------------------------------------
+				-- draw bottom wall
+				WALL_BOT_Y := "1110111";
+			
+				-- draw bottom wall in the horizontal
+				colour <= "111";
+				if (DRAW_BOT_WALL = '1') then
+					BOT_WALL := "00000000";
+				else 
+					BOT_WALL := BOT_WALL + 1;
+				end if;
+				
+				-- draw bottom wall for whole screen in the x
+				if (BOT_WALL = "10011111") then
+					DRAW_BOT_WALL <= '1';
+				else 
+					DRAW_BOT_WALL <= '0';
+				end if;
+
+				x <= std_logic_vector(BOT_WALL(7 downto 0));
+				y <= std_logic_vector(WALL_BOT_Y(6 downto 0));
+				plot <= '1';
+-- Bottom wall bounds ---------------------------------------------------------------
+
+			when "0010" => CURRENT_STATE := "0011";
+-- Player 1: Goalie -----------------------------------------------------------------
 				-- draw player 1 goalie with x offset of 5
 				colour <= "111";
 				P1G_X := "00000101";
@@ -124,18 +194,17 @@ begin
 				else 
 					DRAW_P1G <= '0';
 				end if;
-				
-				colour <= "100";
+
 				x <= std_logic_vector(P1G_X(7 downto 0));
 				y <= std_logic_vector(P1_GOAL(6 downto 0));
 				plot <= '1';
 -- Player 1: Goalie -----------------------------------------------------------------	
 
+			when "0011" => CURRENT_STATE := "0100";
 -- Player 1: Forward ----------------------------------------------------------------
-			when "0001" => CURRENT_STATE := "0010";
-				-- draw player 1 forward with x offset of 15
+				-- draw player 1 forward with x offset of 50
 				colour <= "111";
-				P1F_X := "00001111";
+				P1F_X := "00110010";
 			
 				-- draw player 1 forward in the verticle
 				colour <= "100";
@@ -151,15 +220,67 @@ begin
 				else 
 					DRAW_P1F <= '0';
 				end if;
-				
-				colour <= "100";
+
 				x <= std_logic_vector(P1F_X(7 downto 0));
 				y <= std_logic_vector(P1_FORW(6 downto 0));
 				plot <= '1';
--- Player 1: Forward ----------------------------------------------------------------				
-			when others => CURRENT_STATE := "0001"; 
+-- Player 1: Forward ----------------------------------------------------------------	
 			
-			end case;
+			when "0100" => CURRENT_STATE := "0101"; 
+-- Player 2: Goalie -----------------------------------------------------------------
+				-- draw player 2 goalie with x offset of -5
+				colour <= "111";
+				P2G_X := "10011010";
+			
+				-- draw player 2 goalie in the verticle
+				colour <= "011";
+				if (DRAW_P2G = '1') then
+					P2_GOAL := "0000100";
+				else 
+					P2_GOAL := P2_GOAL + 1;
+				end if;
+				
+				-- draw player 1 goalie for 10 pixels in the y
+				if (P2_GOAL = "0001110") then
+					DRAW_P2G <= '1';
+				else 
+					DRAW_P2G <= '0';
+				end if;
+
+				x <= std_logic_vector(P2G_X(7 downto 0));
+				y <= std_logic_vector(P2_GOAL(6 downto 0));
+				plot <= '1';
+-- Player 2: Goalie -----------------------------------------------------------------
+			
+			when "0101" => CURRENT_STATE := "0110"; 
+-- Player 2: Forward ----------------------------------------------------------------
+				-- draw player 2 forward with x offset of -50
+				colour <= "111";
+				P2F_X := "01101101";
+			
+				-- draw player 2 forward in the verticle
+				colour <= "011";
+				if (DRAW_P2F = '1') then
+					P2_FORW := "0000100";
+				else 
+					P2_FORW := P2_FORW + 1;
+				end if;
+				
+				-- draw player 2 forward for 10 pixels in the y
+				if (P2_FORW = "0001110") then
+					DRAW_P2F <= '1';
+				else 
+					DRAW_P2F <= '0';
+				end if;
+
+				x <= std_logic_vector(P2F_X(7 downto 0));
+				y <= std_logic_vector(P2_FORW(6 downto 0));
+				plot <= '1';
+-- Player 2: Forward ----------------------------------------------------------------
+
+			when others => CURRENT_STATE := "0000";
+			
+		end case;
 			
 		end if;
 		
