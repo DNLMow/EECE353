@@ -2,10 +2,9 @@ EECE353
 =======
 DO NOT ADD ANY FILE OTHER THAN THE DEPENDENCIES.
 
-LAB 4 NOTE:
-BOJAN I HAVE ALREADY WROTE THE STRUCTURE FOR PART 2 AND 3. 
-THE RPOJECT SHOULD COMPILE AND YOU CAN WORK ON IT WITHOUT WORRYING ABOUT BUGS. 
-REMEBER TO INCLUDE THE NEW FILES I PUSHED INTO YOUR PROJECT.
-WRITE THE STATE MACHINE FOLLOWING THE INSTRUCTION OF THE HANDOUT, CONNECT IT IN LAB4.VHD LIKE HOW I DID TO DATAPATH. FELL FREE TO ADD ANYTHING YOU THINK IS NECESSARY.
+Lab5 Note:
+1. Additional code to clear screen is in branch clearscreenv2, the major thing I added is when sw(8) is flipped up, the clock is speedup and start to clearscreen. So when you try to merge, look at the the clock part and the beginning of the statemachine.
+2. I think you already have an idea to do the player pad. For ball you will probably need two signal to control the direction of increment/decrement 0,0/0,1/1,0/1,1 meaning four directions. Then two differnet processes, one to draw and one to erase.
 
-I NEED TO HEAD OF TO STUDY CPSC304. GL!
+Cheers and GL!
+Shibo
