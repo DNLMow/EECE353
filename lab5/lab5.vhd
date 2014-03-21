@@ -87,26 +87,37 @@ begin
 	process(CLOCK_SLOW) 
 	
 		variable P1_GOAL	: unsigned(6 downto 0);
+		variable P1G_X		: unsigned(7 downto 0);
 		
 	begin 
 	
 -- Player 1: Goalie -----------------------------------------------------------------
 		if (rising_edge(CLOCK_SLOW)) then
+		
+			-- draw player 1 goalie with x offset of 5
+			colour <= "111";
+			P1G_X := "00000101";
+		
+			-- draw player 1 goalie in the verticle
+			colour <= "100";
 			if (DRAW_P1G = '1') then
-				P1_GOAL := "0001000";
+				P1_GOAL := "0000100";
 			else 
 				P1_GOAL := P1_GOAL + 1;
 			end if;
 			
-			if (P1_GOAL = "0011110") then
+			-- draw player 1 goalie for 10 pixels in the y
+			if (P1_GOAL = "0001110") then
 				DRAW_P1G <= '1';
 			else 
 				DRAW_P1G <= '0';
 			end if;
 			
+			
 		end if;
 		
-		colour <= "111";
+		colour <= "100";
+		x <= std_logic_vector(P1G_X(7 downto 0));
 		y <= std_logic_vector(P1_GOAL(6 downto 0));
 		plot <= '1';
 -- Player 1: Goalie -----------------------------------------------------------------	
