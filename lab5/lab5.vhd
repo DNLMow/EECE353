@@ -42,6 +42,7 @@ architecture RTL of lab5 is
 	signal INITY  		: std_logic := '1';
 	signal INITX  		: std_logic := '1';
 	signal COUNTER		: unsigned(25 downto 0) := "00000000000000000000000000";
+	signal COUNTERSUP	: unsigned(25 downto 0) := "00000000000000000000000000";
 	signal CLOCK_SLOW : std_logic;
 	
 	signal DRAW_TOP_WALL : std_logic := '1';
@@ -52,6 +53,9 @@ architecture RTL of lab5 is
 	
 	signal DRAW_P2G	: std_logic := '1';
 	signal DRAW_P2F	: std_logic := '1';
+	
+	signal DRAW_B_X	: std_logic := '1';--1 is up, 0 is down
+	signal DRAW_B_Y	: std_logic := '1';--1 is right, 0 is left
 begin 
 	
 	-- includes the vga adapter, which should be in your project 
@@ -79,12 +83,20 @@ begin
 	begin
 	
 		if (rising_edge(CLOCK_50)) then
-			if (COUNTER = "00000000001001000010000000") then
-				COUNTER <= "00000000000000000000000000";
+			if (COUNTER = "00000001001001000010000000") then
+				COUNTERSUP <= COUNTERSUP + 100;
+				COUNTER <= "00000000000000000000000000" + COUNTERSUP;
 				CLOCK_SLOW <= '1';
 			else 
 				COUNTER <= COUNTER + 1;
 				CLOCK_SLOW <= '0';
+			end if;
+			if (sw(8) = '1') then
+				COUNTER <= "00000001001001000010000000";
+				COUNTERSUP <= "00000000000000000000000000";
+			end if;
+			if (COUNTERSUP > "00000000010000000000000000") then
+				COUNTERSUP <= "00000000010000000000000000";
 			end if;
 		end if;
 		
@@ -116,13 +128,25 @@ begin
 		variable P2_FORW 	  : unsigned(6 downto 0);
 		variable P2F_X		  : unsigned(7 downto 0);
 		
+		variable B_XVAR	  : unsigned(7 downto 0):= "01001111";
+		variable B_YVAR     : unsigned(6 downto 0):= "0111011";
+		
 	begin 
 	
 		if (rising_edge(CLOCK_SLOW)) then
 		
 -- Clear the screen -----------------------------------------------------------------
-		if (key(3) = '0') then
+		if (sw(8)= '1') then
+			CURRENT_STATE := "0000";
+		end if;
+			
+		
+			
+-- Clear the screen -----------------------------------------------------------------	
 
+		case CURRENT_STATE is 
+			when "0000" =>  CURRENT_STATE := "0001";
+			
 			if (INITY = '1') then 
 				Y_VAR := "0000000";
 			else
@@ -154,13 +178,7 @@ begin
 				X_VAR := X_VAR + 1;
 			end if;
 			
-			CURRENT_STATE := "0000";
-		end if;
--- Clear the screen -----------------------------------------------------------------	
-
-		case CURRENT_STATE is 
-
-			when "0000" => CURRENT_STATE := "0001";
+			when "0001" => CURRENT_STATE := "0010";
 -- Top wall bounds ------------------------------------------------------------------
 				-- draw top wall
 				WALL_TOP_Y := "0000000";
@@ -185,7 +203,7 @@ begin
 				plot <= '1';
 -- Top wall bounds ------------------------------------------------------------------
 
-			when "0001" => CURRENT_STATE := "0010";
+			when "0010" => CURRENT_STATE := "0011";
 -- Bottom wall bounds ---------------------------------------------------------------
 				-- draw bottom wall
 				WALL_BOT_Y := "1110111";
@@ -210,7 +228,7 @@ begin
 				plot <= '1';
 -- Bottom wall bounds ---------------------------------------------------------------
 
-			when "0010" => CURRENT_STATE := "0011";
+			when "0011" => CURRENT_STATE := "0100";
 -- Player 1: Goalie -----------------------------------------------------------------
 				-- draw player 1 goalie with x offset of 5
 				colour <= "111";
@@ -236,7 +254,7 @@ begin
 				plot <= '1';
 -- Player 1: Goalie -----------------------------------------------------------------	
 
-			when "0011" => CURRENT_STATE := "0100";
+			when "0100" => CURRENT_STATE := "0101";
 -- Player 1: Forward ----------------------------------------------------------------
 				-- draw player 1 forward with x offset of 50
 				colour <= "111";
@@ -262,7 +280,7 @@ begin
 				plot <= '1';
 -- Player 1: Forward ----------------------------------------------------------------	
 			
-			when "0100" => CURRENT_STATE := "0101"; 
+			when "0101" => CURRENT_STATE := "0110"; 
 -- Player 2: Goalie -----------------------------------------------------------------
 				-- draw player 2 goalie with x offset of -5
 				colour <= "111";
@@ -288,7 +306,7 @@ begin
 				plot <= '1';
 -- Player 2: Goalie -----------------------------------------------------------------
 			
-			when "0101" => CURRENT_STATE := "0110"; 
+			when "0110" => CURRENT_STATE := "0111"; 
 -- Player 2: Forward ----------------------------------------------------------------
 				-- draw player 2 forward with x offset of -50
 				colour <= "111";
@@ -313,9 +331,29 @@ begin
 				y <= std_logic_vector(P2_FORW(6 downto 0));
 				plot <= '1';
 -- Player 2: Forward ----------------------------------------------------------------
-
-			when others => CURRENT_STATE := "0000";
 			
+			when "0111" => CURRENT_STATE := "1000";
+-- Ball : YOLO SWEG------------------------------------------------------------------
+				colour <= "110";
+				if(DRAW_B_X = '1') then
+				B_XVAR := B_XVAR + 1;
+				end if;
+				if(DRAW_B_X = '0') then
+				B_XVAR := B_XVAR - 1;
+				end if;
+				if(DRAW_B_Y = '0') then
+				B_YVAR := B_YVAR + 1;
+				end if;
+				if(DRAW_B_Y = '1') then
+				B_YVAR := B_YVAR - 1;
+				end if;
+				
+				x <= std_logic_vector(B_XVAR);
+				y <= std_logic_vector(B_YVAR);
+				plot <= '1';
+-- Ball : YOLO SWEG------------------------------------------------------------------
+			
+			when others => CURRENT_STATE := "0001";
 		end case;
 			
 		end if;
