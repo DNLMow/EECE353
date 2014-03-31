@@ -59,7 +59,7 @@ BEGIN
 	
 	VARIABLE counter_c	:UNSIGNED(9 DOWNTO 0) := "0000000000";
 	VARIABLE switch_c		:STD_LOGIC := '0';
-	VARIABLE input_c     :SIGNED(23 DOWNTO 0) := "000000001000000000000000";
+	VARIABLE input_c     :SIGNED(23 DOWNTO 0) := "000000000000000000000000";
 	VARIABLE current_state: state_types;
 	
 	BEGIN
@@ -92,10 +92,13 @@ BEGIN
 	current_state := C2;
 	
 	when C2 =>
-	if(write_ready = '0') then
+	if(write_ready = '1') then
+	current_state := C2;
+	elsif(write_ready = '0') then
 	write_s <= '0';
-	end if;
 	current_state := C1;
+	end if;
+	
 	
 	end case;
 	end if;
